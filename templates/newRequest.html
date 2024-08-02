@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Request</title>
+    <link rel="icon" type="image/x-icon" href="./pic/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Roboto+Slab:wght@300&display=swap" rel="stylesheet">
+
+    <style>
+
+        body {
+            color: #333;
+            font-family: "Fredoka", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: lighter;
+            font-style: normal;
+            font-variation-settings: "wdth" 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-weight: 700;
+            background: url('./pic/background_main_pic.jpg');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        #userName, #city {
+            color: #8fc4a7;
+            font-size: 20px;
+        }
+
+        img{
+            width: 300px;
+        }
+
+        form {
+            background: transparent; 
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        h1 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        form > * {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #availabilityFields {
+            margin-bottom: 10px;
+        }
+
+        label {font-weight: bold;}
+
+        input, select, textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 8px;
+        }
+
+        #userName, #city {margin: 0;}
+
+        button {
+            height: 30px;
+            background: #fff;
+            border: none;
+            outline: none;
+            border-radius: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        #addAvailability {
+            width: 30px;
+        }
+
+        #submitRequest {
+            width: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        textarea {
+            font-size: 17px;
+            font-weight: 400px;
+        }
+
+        @media only screen and (min-width: 1920px) {
+            body {
+                font-size: 22px;
+            }  
+            .container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .logo, .form {
+                width: calc(50% - 10px);
+            }
+            form {
+                width: 100%;
+            }
+            h1 {
+                font-size: 34px;
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <div class="container">
+        <div class="logo">
+            <img src="./pic/comuneedy_logo.png" alt="logo">
+        </div>
+
+        <div class="form">
+            <form id="newRequest">
+
+                <h1>Raise A New Request</h1>
+                <label for="First_name">First Name</label>
+                <span id="First_name"></span>
+                <label for="Last_name">Last Name</label>
+                <span id="Last_name"></span>
+                <label for="City">City</label>
+                <span id="City"></span>
+                <label for="Email">Email</label>
+                <span id="user_email"></span>
+
+                <label for="Information">What is the problem?</label>
+                <input type="text" id="Information" name="Information"></input>
+
+                <label for="Availability">Availability:</label>
+                <input type="date" id="availabilityDate" name="Availability">
+            
+                <label for="Additional_Req">Additional Requests</label>
+                <input type="text" id="Additional_Req" name="Additional_Req"></input>
+
+                <button type="button" onclick="submitRequest()">Submit Request</button>
+                                    
+            </form>
+        </div>
+        <p id="successMessage" style="display: none; color: #333;"></p>
+    </div>
+
+    <script>
+        const userDetails =JSON.parse(sessionStorage.getItem('user'));
+        document.addEventListener('DOMContentLoaded', function() {
+            if (userDetails) {
+            const nameField = document.getElementById('First_name');
+            const lastnameField = document.getElementById('Last_name');
+            const emailField = document.getElementById('user_email');
+            const cityField = document.getElementById('City');
+
+
+            // Assuming the name is stored as a single string
+            nameField.textContent = userDetails.name;
+            nameField.readOnly = true;
+            lastnameField.textContent = userDetails.last_name;
+
+            emailField.textContent = userDetails.email;
+            emailField.readOnly = true; // Make the email field read-only
+
+            cityField.textContent = userDetails.city;
+            cityField.readOnly = true;
+            }
+        });
+
+
+        async function submitRequest() {
+            const availabilityDateInput = document.getElementById('availabilityDate');
+            console.log(availabilityDateInput)
+            const availabilityDate = new Date(availabilityDateInput.value);
+            console.log(availabilityDate);
+            const userForm = document.getElementById('newRequest');
+            const formData = new FormData(userForm);
+            const user_json = {};
+            formData.forEach((value, key) => {user_json[key] = value;});
+            if (userDetails) {
+                for (const [key, value] of Object.entries(userDetails)) {
+                    user_json[key] = value;
+                }
+            }
+            user_json[user_email]= userDetails.email;
+            user_json[First_name]= userDetails.name;
+            user_json[Last_name]= userDetails.last_name;
+            user_json[City]= userDetails.city;
+            user_json["Availability"] = availabilityDate;
+            console.log(user_json)
+            try {
+                const response = await fetch('/api/new_request/',//await - waiting for the server to response
+                {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                },
+                    body: JSON.stringify(user_json),
+                });
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    alert(`Error: ${errorMessage}`);
+                } else {
+                    const result = await response.json();
+                    displaySuccessMessage(`Success: ${result.message}`);
+                    hideForm();
+                    window.location.href = 'index.html';
+                }
+            }
+            catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred udi 1234. Please try again.');
+            }
+
+        }
+        function displaySuccessMessage(message) {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                }
+
+        function hideForm() {
+                const form = document.getElementById('newRequest');
+                form.style.display = 'none';
+                }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+
+            try {
+                const response = await fetch('/api/user/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const userData = await response.json();
+
+                document.getElementById('First_name').innerHTML = userData.name;
+                document.getElementById('Last_name').innerHTML = userData.last_name;
+                document.getElementById('City').innerHTML = userData.city;
+            } catch (error) {
+                console.error(`Error: ${error}`);
+            }
+
+
+        });
+        var currentDate = new Date();
+        var formattedDate = currentDate.toDateString();
+        document.getElementById("availabilityDate").textContent = formattedDate;
+
+    </script>
+
+</body>
+</html>
